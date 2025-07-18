@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mon Chatbot Web</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        #chatbox { height: 300px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll; margin-bottom: 10px; }
+        #userInput { width: 70%; padding: 8px; }
+        button { padding: 8px 15px; }
+        .bot { color: blue; }
+        .user { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Mon Chatbot Simple</h1>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Tapez votre message...">
+    <button onclick="sendMessage()">Envoyer</button>
+
+    <script>
+        // Base de connaissances
+        const reponses = {
+            "bonjour": ["Salut !", "Coucou !", "Bonjour !"],
+            "heure": ["Je n'ai pas d'horloge", "Regarde ton téléphone", "Il est l'heure de coder !"],
+            "bye": ["Au revoir", "À plus !", "Bye bye"]
+        };
+
+        // Détection d'intention
+        function comprendre(texte) {
+            texte = texte.toLowerCase();
+            if (texte.includes("bonjour") || texte.includes("salut") || texte.includes("coucou")) {
+                return "bonjour";
+            } else if (texte.includes("heure") || texte.includes("horloge") || texte.includes("temps")) {
+                return "heure";
+            } else if (texte.includes("bye") || texte.includes("au revoir") || texte.includes("quitter")) {
+                return "bye";
+            }
+            return null;
+        }
+
+        // Affichage des messages
+        function afficherMessage(auteur, message) {
+            const chatbox = document.getElementById("chatbox");
+            const div = document.createElement("div");
+            div.innerHTML = `<strong class="${auteur}">${auteur}:</strong> ${message}`;
+            chatbox.appendChild(div);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        // Envoi de message
+        function sendMessage() {
+            const userInput = document.getElementById("userInput");
+            const message = userInput.value.trim();
+            
+            if (message) {
+                afficherMessage("Vous", message);
+                userInput.value = "";
+                
+                const intention = comprendre(message);
+                
+                if (intention === "bye") {
+                    const reponse = reponses["bye"][Math.floor(Math.random() * reponses["bye"].length)];
+                    afficherMessage("Bot", reponse);
+                    setTimeout(() => { alert("Chatbot terminé. Actualisez la page pour recommencer."); }, 500);
+                } else if (intention) {
+                    const reponse = reponses[intention][Math.floor(Math.random() * reponses[intention].length)];
+                    afficherMessage("Bot", reponse);
+                } else {
+                    afficherMessage("Bot", "Je n'ai pas compris...");
+                }
+            }
+        }
+
+        // Permettre d'envoyer avec la touche Entrée
+        document.getElementById("userInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        // Message de bienvenue
+        afficherMessage("Bot", "Bonjour ! Tape 'bye' pour quitter.");
+    </script>
+</body>
+</html>
